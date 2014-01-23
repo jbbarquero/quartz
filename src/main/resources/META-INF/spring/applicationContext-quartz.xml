@@ -9,21 +9,17 @@
 
 	<context:property-placeholder location="classpath*:META-INF/spring/*.properties" />
 
-	<!-- JobDetailBean --> 
-	<bean name="goodByJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+	<!-- JobDetailBean -->
+	<bean name="goodByJobDetail"
+		class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
 		<property name="jobClass" value="com.malsolo.quartz.spring.GoodByeJob" />
+		<property name="durability" value="true" />
 	</bean>
-	<!-- 
-	<bean name="goodByJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-		<property name="targetObject" value="goodByeJobPojo" />
-		<property name="targetMethod" value="doIt" />
-	</bean>
-	-->
 
 	<!-- Trigger -->
 	<bean id="cronTrigger"
 		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-		<property name="jobDetail" ref="goodByeJob" />
+		<property name="jobDetail" ref="goodByJobDetail" />
 		<!-- run every morning at 6 AM -->
 		<property name="cronExpression" value="0 0/1 * * * ?" />
 	</bean>
@@ -34,6 +30,11 @@
 			<list>
 				<ref bean="cronTrigger" />
 			</list>
+		</property>
+		<property name="quartzProperties">
+			<props>
+				<prop key="org.quartz.scheduler.skipUpdateCheck">true</prop>
+			</props>
 		</property>
 	</bean>
 
